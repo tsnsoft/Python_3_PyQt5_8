@@ -64,7 +64,7 @@ class Main(QDialog):
                              difference_of_sin_of_k_i_and_cos_of_k_minus_1 ** 3
 
                     self.tableWidget.setItem(i, j,
-                                             QTableWidgetItem(str(answer)))
+                                             QTableWidgetItem(str(format(answer, ".10f"))))
                 except Exception:
                     self.tableWidget.setItem(i, j, QTableWidgetItem('none'))
 
