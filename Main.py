@@ -1,109 +1,77 @@
 #!/usr/bin/env python3
 # coding=utf-8
 
-import math
-import sys
-from random import randint
+# Программа создает графический интерфейс с таблицей (2 столбца, 10 строк).
+# Первый столбец заполняется случайными числами, во втором вычисляются значения
+# по формуле: Y_i = \frac{\sqrt[3]{(\sum K_i)^2} * [\sin^2(K_i) - \cos^2(K_{i-1})]^3}{\prod K_{i-1}}, i = 1..10
+# где:
+# - \sum K_i: сумма всех элементов от K(0) до K(i) включительно
+# - \prod K_{i-1}: произведение всех элементов от K(0) до K(i-1)
+# - \sin^2(K_i) - \cos^2(K_{i-1}): разность квадратов синуса текущего и косинуса предыдущего элемента
+# Вычисления начинаются с i = 1, для i = 0 устанавливается значение 'none'
 
-from PyQt5 import QtGui
-from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import *
-from PyQt5.uic import loadUi
+import sys  # Для работы с системными функциями (передача аргументов командной строки)
+from PyQt5 import QtGui  # Для работы с иконками и изображениями
+from PyQt5.QtGui import QPixmap  # Для загрузки и отображения изображений
+from PyQt5.QtWidgets import *  # Для создания интерфейса (QDialog, QTableWidgetItem и др.)
+from PyQt5.uic import loadUi  # Для загрузки UI-файла
+from calculator import Calculator  # Импортируем класс Calculator
+from random import randint  # Для генерации случайных чисел (добавлен импорт для randint)
 
-
-class Main(QDialog):
-    def __init__(self):
-        super(Main, self).__init__()
-        loadUi('uis/main.ui', self)
-
-        self.setWindowTitle('Сложные табличные вычисления в Python')
-
-        self.setWindowIcon(QtGui.QIcon('images/logo.png'))
-        self.label_img.setPixmap(QPixmap('images/task.png'))
-        self.label_img.setScaledContents(True)
-
-        self.btn_random_number.clicked.connect(self.fill_random_numbers)
-        self.btn_solve.clicked.connect(self.solve)
-        self.btn_clear.clicked.connect(self.clear)
-        self.btn_exit.clicked.connect(self.exit)
-
-    def fill_random_numbers(self):
-        """
-        заполняем таблицу случайными числами
-        :return: pass
-        """
-        i = 0
-
-        while i < self.tableWidget.rowCount():
-            random_num = randint(0, 101)
-            self.tableWidget.setItem(i, 0, QTableWidgetItem(str(random_num)))
-            i += 1
-
-    def solve(self):
-
-        if validation_of_data(self.tableWidget):
-            i = 0
-            j = 1
-
-            multiplication_of_k_i_minus_1 = 1
-            sum_of_k_i = 0
-
-            while i < self.tableWidget.rowCount():
-                item = self.tableWidget.item(i, 0).text()
-                sum_of_k_i += int(item)
-                try:
-                    # item_minus_1 выкинет исключение при первой итерации,
-                    # поэтому перехватываем её и выводим none
-                    item_minus_1 = self.tableWidget.item(i - 1, 0).text()
-                    multiplication_of_k_i_minus_1 *= int(item_minus_1)
-                    difference_of_sin_of_k_i_and_cos_of_k_minus_1 = (math.sin(
-                        int(item)) ** 2 - math.cos(int(item_minus_1)) ** 2)
-
-                    answer = (((sum_of_k_i ** 2) ** (1 / 3.0)) /
-                              float(multiplication_of_k_i_minus_1)) * \
-                             difference_of_sin_of_k_i_and_cos_of_k_minus_1 ** 3
-
-                    self.tableWidget.setItem(i, j,
-                                             QTableWidgetItem(str(format(answer, ".10f"))))
-                except Exception:
-                    self.tableWidget.setItem(i, j, QTableWidgetItem('none'))
-
-                i += 1
-
-            self.label_error.setText('')
-        else:
-            self.label_error.setText('Введены некорректные данные!')
-
-    def clear(self):
-        self.tableWidget.clearContents()
-
-    def exit(self):
-        self.close()
-
-
-def validation_of_data(table_widget):
+def fill_random_numbers(table_widget):
     """
-    проверяем данные на валидность
-    :param table_widget: таблица с числами
-    :return: True - данные корректны, False - есть некорректные данные
+    Заполняет первый столбец таблицы случайными числами от 0 до 101.
+    :param table_widget: Виджет таблицы, в которую записываются числа
     """
-    i = 0
+    i = 0  # Индекс текущей строки
+    # Проходим по всем строкам таблицы (0 до 9, всего 10 строк)
     while i < table_widget.rowCount():
-        try:
-            float(table_widget.item(i, 0).text())
-            i += 1
-        except Exception:
-            return False
+        random_num = randint(0, 101)  # Генерируем случайное число в диапазоне 0-101
+        # Записываем число в первый столбец (столбец 0) текущей строки
+        table_widget.setItem(i, 0, QTableWidgetItem(str(random_num)))
+        i += 1  # Переходим к следующей строке
 
-    return True
-
+def clear(table_widget):
+    """
+    Очищает содержимое таблицы.
+    :param table_widget: Виджет таблицы, который нужно очистить
+    """
+    # Удаляем все данные из таблицы, сохраняя структуру (заголовки и размеры)
+    table_widget.clearContents()
 
 def main():
+    """
+    Основная функция программы: создает и настраивает интерфейс, подключает кнопки.
+    """
+    # Создаем приложение PyQt5
     app = QApplication(sys.argv)
-    window = Main()
+    # Создаем диалоговое окно
+    window = QDialog()
+    # Загружаем интерфейс из UI-файла
+    loadUi('uis/main.ui', window)
+
+    # Настраиваем заголовок окна
+    window.setWindowTitle('Сложные табличные вычисления в Python')
+    # Устанавливаем иконку окна
+    window.setWindowIcon(QtGui.QIcon('images/logo.png'))
+    # Устанавливаем изображение задачи и масштабируем его
+    window.label_img.setPixmap(QPixmap('images/task.png'))
+    window.label_img.setScaledContents(True)
+
+    # Создаем экземпляр класса Calculator
+    calculator = Calculator()
+
+    # Подключаем кнопки к соответствующим функциям с использованием lambda для передачи параметров
+    window.btn_random_number.clicked.connect(lambda: fill_random_numbers(window.tableWidget))
+    window.btn_solve.clicked.connect(lambda: calculator.calculate(window.tableWidget))
+    window.btn_clear.clicked.connect(lambda: clear(window.tableWidget))
+    window.btn_exit.clicked.connect(window.close)
+
+    # Показываем окно на экране
     window.show()
+    # Запускаем приложение и завершаем выполнение при закрытии
     sys.exit(app.exec_())
 
-
 if __name__ == '__main__':
+    # Запускаем программу, если файл выполняется как основной
     main()
