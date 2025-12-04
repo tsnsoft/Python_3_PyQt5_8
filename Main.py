@@ -18,6 +18,7 @@ from PyQt5.uic import loadUi  # Для загрузки UI-файла
 from calculator import Calculator  # Импортируем класс Calculator
 from random import randint  # Для генерации случайных чисел (добавлен импорт для randint)
 
+
 def fill_random_numbers(table_widget):
     """
     Заполняет первый столбец таблицы случайными числами от 0 до 101.
@@ -31,6 +32,7 @@ def fill_random_numbers(table_widget):
         table_widget.setItem(i, 0, QTableWidgetItem(str(random_num)))
         i += 1  # Переходим к следующей строке
 
+
 def clear(table_widget):
     """
     Очищает содержимое таблицы.
@@ -38,6 +40,7 @@ def clear(table_widget):
     """
     # Удаляем все данные из таблицы, сохраняя структуру (заголовки и размеры)
     table_widget.clearContents()
+
 
 def main():
     """
@@ -71,6 +74,7 @@ def main():
     window.show()
     # Запускаем приложение и завершаем выполнение при закрытии
     sys.exit(app.exec_())
+
 
 if __name__ == '__main__':
     # Запускаем программу, если файл выполняется как основной

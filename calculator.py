@@ -4,11 +4,14 @@
 import math  # Для математических вычислений (sin, cos, pow)
 from PyQt5.QtWidgets import QTableWidgetItem  # Для работы с элементами таблицы
 
+
 class Calculator:
     """
-    Класс для выполнения вычислений по формуле Y_i = \frac{\sqrt[3]{(\sum K_i)^2} * [\sin^2(K_i) - \cos^2(K_{i-1})]^3}{\prod K_{i-1}}
-    для диапазона i = 1..10, где для i = 0 возвращается 'none'.
+    Класс для выполнения вычислений по формуле
     """
+
+    #    Y_i = \frac{\sqrt[3]{(\sum K_i)^2} * [\sin^2(K_i) - \cos^2(K_{i-1})]^3}{\prod K_{i-1}}
+    #    для диапазона i = 1..10, где для i = 0 возвращается 'none'.
 
     def __init__(self):
         """Инициализирует объект калькулятора без параметров."""
@@ -17,10 +20,11 @@ class Calculator:
     def calculate(self, table_widget):
         """
         Выполняет вычисления по формуле для каждой строки таблицы и заполняет второй столбец.
-        Формула: Y_i = \frac{\sqrt[3]{(\sum K_i)^2} * [\sin^2(K_i) - \cos^2(K_{i-1})]^3}{\prod K_{i-1}}, i = 1..10
         :param table_widget: Виджет таблицы с данными в первом столбце
         :return: None, результаты записываются в таблицу
         """
+        #        Формула: Y_i = \frac{\sqrt[3]{(\sum K_i)^2} * [\sin^2(K_i) - \cos^2(K_{i-1})]^3}{\prod K_{i-1}}, i = 1..10
+
         # Проверяем корректность данных в первом столбце перед вычислениями
         if self._validate_data(table_widget):
             i = 1  # Начинаем с i = 1, как указано в формуле (i = 1..10)
@@ -45,12 +49,12 @@ class Calculator:
                     multiplication_of_k_i_minus_1 *= int(item_minus_1)
 
                     # Вычисляем разность квадратов синуса текущего и косинуса предыдущего элемента
-                    difference_of_sin_of_k_i_and_cos_of_k_minus_1 = (math.sin(int(item)) ** 2 - 
-                                                                   math.cos(int(item_minus_1)) ** 2)
+                    difference_of_sin_of_k_i_and_cos_of_k_minus_1 = (math.sin(int(item)) ** 2 -
+                                                                     math.cos(int(item_minus_1)) ** 2)
 
                     # Вычисляем результат по формуле: (кубический корень * куб разности) / произведение
-                    answer = ((((sum_of_k_i ** 2) ** (1 / 3.0)) * 
-                              difference_of_sin_of_k_i_and_cos_of_k_minus_1 ** 3) /
+                    answer = ((((sum_of_k_i ** 2) ** (1 / 3.0)) *
+                               difference_of_sin_of_k_i_and_cos_of_k_minus_1 ** 3) /
                               float(multiplication_of_k_i_minus_1))
 
                     # Записываем результат во второй столбец с точностью до 10 знаков
